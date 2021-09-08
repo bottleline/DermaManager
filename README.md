@@ -6,6 +6,6 @@
 - 스마트폰 카메라로 얼굴을 촬영하여 피부의 상태를 측정
 
 ## 사용한 기술
-- `Swift 4`, `Xcode 10`
+- `Swift 4`, `Xcode 11`
 - `AVFoundation`, `CoreBluetooth`
 - `Alamofire`
