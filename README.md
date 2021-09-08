@@ -15,13 +15,13 @@
 
 ## 주요 구현 장면
 
-### 1. 블루투스 연결
+### 1. 블루투스 연결 (CoreBluetooth)
 ![bluetooth](https://user-images.githubusercontent.com/42457589/132481152-c9398231-6f63-49e2-b6a8-67f7084061ee.gif)
 
-### 2. 얼굴 각도 인식 카메라 및 자동촬영
+### 2. 얼굴 각도 인식 카메라 및 자동촬영 및 서버전송 (AVFoundation, GoogleMobileVision, Alamofire)
 ![cam](https://user-images.githubusercontent.com/42457589/132481160-308a01dc-cd5c-42d9-90f3-0d6b0a7e29e2.gif)
 
-### 3. 피부 분석 결과 이미지 좌우 스크롤뷰 및 확대 축소
+### 3. 피부 분석 결과 이미지 좌우 스크롤 뷰로 표현 및 확대 축소
 ![recored](https://user-images.githubusercontent.com/42457589/132481165-550d1a45-7dba-4620-bc23-6209699cd766.gif)
 
 ### 4. 분석 결과 DB저장 테이블 뷰 표현
