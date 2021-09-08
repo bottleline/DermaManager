@@ -14,3 +14,5 @@
 - `Alamofire`
 
 ## 주요 구현 장면
+# 1. bluetooth connection
+![bluetooth](https://user-images.githubusercontent.com/42457589/132481152-c9398231-6f63-49e2-b6a8-67f7084061ee.gif)
