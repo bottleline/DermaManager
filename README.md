@@ -20,6 +20,10 @@
 - `TabbarController`
 - `ScrollView`
 
+## 한계점 / 개선점
+- 네비게이션 컨트롤러를 적용하여 깔끔한 UI를 제작할 필요가 있음
+- 2번째 탭의 구성을 ScrollView 대신 TableView 나 CollectionView를 적용하여 깔끔하게 재구성할 필요가 
+
 ## 주요 구현 장면
 
 ### 1. 블루투스 연결 (CoreBluetooth)
