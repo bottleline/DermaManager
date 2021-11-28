@@ -79,7 +79,73 @@ func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPerip
 ### 2. 얼굴 각도 인식 및 자동촬영 카메라
 ![cam](https://user-images.githubusercontent.com/42457589/132481160-308a01dc-cd5c-42d9-90f3-0d6b0a7e29e2.gif)  
  이미지 분석서버에 전송할 얼굴사진을 촬영한다.
+### 1. 얼굴인식
+``` swift
+import AVFoundation
+import MLKit
+@objc class PreviewController: UIViewController {
+  var faceDetector : FaceDetector?
+...
+let options = FaceDetectorOptions()
+        options.performanceMode = .accurate
+        options.landmarkMode = .all
+        options.classificationMode = .all
+        
+        // Real-time contour detection of multiple faces
+        // options.contourMode = .all
+        
+        faceDetector = FaceDetector.faceDetector(options: options)
+...
+func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+            
+            //얼굴 인식하기위해 sampleBuffer에서 이미지 추출후 VisionImage 로 변환 및 orientation 설정
+            let image = VisionImage(buffer: sampleBuffer)
+            image.orientation = imageOrientation(deviceOrientation: .faceUp/*UIDevice.current.orientation*/,cameraPosition: cameraPosition)
+            
+            weak var weakSelf = self
+            faceDetector!.process(image) { faces, error in
+                guard let _ = weakSelf else {return}
+                guard error == nil, let faces = faces, !faces.isEmpty else {return}
+                for face in faces {
+ 
+                if face.hasHeadEulerAngleX {
+                    let rotX = face.headEulerAngleX  // Head is rotated to the uptoward rotX degrees      
+                }
+                if face.hasHeadEulerAngleY {
+                    let rotY = face.headEulerAngleY  // Head is rotated to the right rotY degrees
+                }
+                if face.hasHeadEulerAngleZ {
+                    let rotZ = face.headEulerAngleZ  // Head is tilted sideways rotZ degrees
+                }
+               .....
+```
 
+### 2. urlSession 을 통한 이미지전송
+``` swift
+       buffer = Data()
+       let httpBody = NSMutableData()
+       
+       let boundary = "XXXXX"
+       
+       for (i,fi) in faceImageArray.enumerated(){
+           guard let imageData = resizeImage(fi).jpegData(compressionQuality: 1.0) else {fatalError("Invalid Data")}
+           httpBody.append(convertFileData(fieldName: "faceImage",
+                                           fileName: "0\(i+4).jpg",
+                                           mimeType: "image/jpeg",
+                                           fileData: imageData,
+                                           using: boundary))
+       }
+
+       httpBody.appendString("--\(boundary)--")
+       
+       var agree = ""
+
+       var r = setURLRequest(urlString:urlString,userToken:Constants.AnalyzeToken.userToken)
+       r.httpBody = httpBody as Data
+
+       dataTask = buildSession().dataTask(with: r)
+       dataTask?.resume()
+```
 
 ### 3. 이미지 좌우 스크롤 뷰 / 스크롤뷰 확대 축소
 ![recored](https://user-images.githubusercontent.com/42457589/132481165-550d1a45-7dba-4620-bc23-6209699cd766.gif)  
