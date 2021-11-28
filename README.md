@@ -119,34 +119,34 @@ func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBu
                 }
                .....
 ```
-
-### 2. urlSession 을 통한 이미지전송
 ``` swift
-       buffer = Data()
-       let httpBody = NSMutableData()
-       
-       let boundary = "XXXXX"
-       
-       for (i,fi) in faceImageArray.enumerated(){
-           guard let imageData = resizeImage(fi).jpegData(compressionQuality: 1.0) else {fatalError("Invalid Data")}
-           httpBody.append(convertFileData(fieldName: "faceImage",
-                                           fileName: "0\(i+4).jpg",
-                                           mimeType: "image/jpeg",
-                                           fileData: imageData,
-                                           using: boundary))
-       }
+    // Alamofire를 통한 multipart 이미지전송 
+AF.upload(multipartFormData: { multipartFormData in
+            if let imageData = UIImageJPEGRepresentation(image, 1) {
+                multipartFormData.append(imageData, withName: "image", fileName: "image.jpg", mimeType: "image/png")
+            }}, to: url, method: .post, headers: ["Authorization": AUTO],
+                encodingCompletion: { encodingResult in
+                    switch encodingResult {
+                    case .success(let upload, _, _):
+                        
+                        upload.uploadProgress { progress in
+                            print(progress.fractionCompleted)
+                            self.progressView.setProgress(Float(progress, animated: true)
+                        }
 
-       httpBody.appendString("--\(boundary)--")
-       
-       var agree = ""
-
-       var r = setURLRequest(urlString:urlString,userToken:Constants.AnalyzeToken.userToken)
-       r.httpBody = httpBody as Data
-
-       dataTask = buildSession().dataTask(with: r)
-       dataTask?.resume()
-```
-
+                        upload.response { [weak self] response in
+                            guard self != nil else {return}
+                            do{
+                                guard let json = try JSONSerialization.jsonObject(with: response.data!, options: .mutableContainers) as? [String:Any] else { return }
+                            }catch let jsonErr{
+                                print("Error Jason Serializing", jsonErr)
+                            }
+                        }
+                    case .failure(let encodingError):
+                        
+                    }
+        })
+```  
 ### 3. 이미지 좌우 스크롤 뷰 / 스크롤뷰 확대 축소
 ![recored](https://user-images.githubusercontent.com/42457589/132481165-550d1a45-7dba-4620-bc23-6209699cd766.gif)  
  분석결과 이미지의 디테일화면을 스크롤 하여 볼수 있다.
