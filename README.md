@@ -29,10 +29,57 @@
 ### 1. 블루투스 연결 (CoreBluetooth)
 ![bluetooth](https://user-images.githubusercontent.com/42457589/132481152-c9398231-6f63-49e2-b6a8-67f7084061ee.gif)  
  하드웨어 기기와 블루트스 연결을 한다.
+### 1
+``` swift
+ // 1. 디바이스 스캔시작 
+ centralManager.scanForPeripherals(withServices: nil) 
 
+``` 
+### 2
+``` swift
+ // 1. 디바이스 발견시 연결 
+func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        if peripheral.name == "myDevice"{
+            central.connect(peripheral,options:nil) // 일련번호를 확인후 연결한다
+        }
+    }
+
+``` 
+``` swift
+ // 2. notifying 서비스 연결
+ func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+     guard let charactistics = service.characteristics else{return}
+     if charactistic.uuid == notiUUID{
+                peripheral.setNotifyValue(true, for: charactistic) // notifiying 서비스를 구독하여 기기에서 변경된 값을 감시
+            }
+      }
+ }
+ 
+ //3. 원하는 패킷 전송
+ peripheral.writeValue(value) // 패킷 전송
+
+``` 
+### 3
+``` swift
+// 3. 응답패킷 수신 
+ func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        switch characteristic.uuid{
+        
+        case notiUUID:
+            guard let s = characteristic.value else {return}
+            guard let sData = s.data(using: .utf8) else {return}
+            if let string = String(data: sData,encoding: String.Encoding.utf8){
+                print("receive : \(string)")
+            }
+        default:
+            print("Unhandled Charactistic UUID: \(characteristic.uuid)")
+        }
+    }
+```
 ### 2. 얼굴 각도 인식 및 자동촬영 카메라
 ![cam](https://user-images.githubusercontent.com/42457589/132481160-308a01dc-cd5c-42d9-90f3-0d6b0a7e29e2.gif)  
  이미지 분석서버에 전송할 얼굴사진을 촬영한다.
+
 
 ### 3. 이미지 좌우 스크롤 뷰 / 스크롤뷰 확대 축소
 ![recored](https://user-images.githubusercontent.com/42457589/132481165-550d1a45-7dba-4620-bc23-6209699cd766.gif)  
